@@ -119,7 +119,18 @@ def detect_sql_injection(data: dict) -> bool:
 
 @app.post("/detect/")
 async def detect_sql(request: Request):
-    data = await request.json()
+    try:
+        data = await request.json()
+    except Exception as e:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "message": f"Invalid JSON: {str(e)}",
+                "code": 400
+            }
+        )
+    
     print(f"Received payload: {data}")
     if detect_sql_injection(data):
         return JSONResponse(
@@ -131,10 +142,10 @@ async def detect_sql(request: Request):
             }
         )
     return JSONResponse(
-            status_code=200,
-            content={
-                "success": False,
-                "message": "SQL Injection Detected",
-                "code": 400
-            }
-        )
+        status_code=200,
+        content={
+            "success": True,
+            "message": "Safe",
+            "code": 200
+        }
+    )

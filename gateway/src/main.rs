@@ -85,7 +85,10 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(NormalizePath::trim())
             .wrap(cors)
-            .wrap(from_fn(req_detection))
+            .wrap(from_fn({
+                let value = state.clone();
+                move |req, srv| req_detection(req, srv, value.pg_db.get_ref().clone())
+            }))
             .wrap(from_fn({
                 let value = state.clone();
                 move |req, srv| write_logs(req, srv, value.pg_db.get_ref().clone())
