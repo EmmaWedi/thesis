@@ -1,0 +1,30 @@
+{
+  "name": "sql-tester",
+  "version": "1.0.0",
+  "description": "A script to read csv file and make requests",
+  "main": "main.js",
+  "scripts": {
+    "start": "npm run prod",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "set NODE_ENV=development && concurrently --kill-others \"tsc -w\" \"nodemon build/main.js\"",
+    "prod": "set NODE_ENV=production && rm -rf build/ && tsc",
+    "local": "docker compose up -d && yarn run dev"
+  },
+  "keywords": [
+    "sql",
+    "injection"
+  ],
+  "author": "Emmanuel Aniagyei",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "csv-parser": "^3.1.0",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./build",
+    "module": "commonjs",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "es2020",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    //"skipLibCheck": true, //include this line ony when typescript is giving type issues
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"]
+  },
+  "include": ["src/**/*", "src/app/jobs"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
