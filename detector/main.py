@@ -132,6 +132,7 @@ async def detect_sql(request: Request):
         )
     
     print(f"Received payload: {data}")
+    
     if detect_sql_injection(data):
         return JSONResponse(
             status_code=400,

