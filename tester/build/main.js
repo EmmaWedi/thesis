@@ -5,71 +5,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const csv_parser_1 = __importDefault(require("csv-parser"));
-const csvFilePath = 'SQLiV3.csv';
+const axios_1 = __importDefault(require("axios"));
+const csvFilePath = 'SQLi.csv';
 const apiUrl = 'http://localhost:3500/api/v1/customers/login';
-function readCsvFile(filePath) {
-    return new Promise((resolve, reject) => {
-        const results = [];
-        fs_1.default.createReadStream(filePath)
-            .pipe((0, csv_parser_1.default)())
-            .on('data', (row) => {
-            results.push(row);
-        })
-            .on('end', () => {
-            resolve(results);
-        })
-            .on('error', (error) => {
-            reject(error);
+const batchSize = 10;
+const rows = [];
+fs_1.default.createReadStream(csvFilePath)
+    .pipe((0, csv_parser_1.default)())
+    .on('data', (row) => {
+    rows.push(row);
+})
+    .on('end', () => {
+    console.log('CSV file successfully processed');
+    processRowsInBatches(rows, batchSize);
+});
+async function processRowsInBatches(rows, batchSize) {
+    for (let i = 0; i < rows.length; i += batchSize) {
+        const batch = rows.slice(i, i + batchSize);
+        console.log(`Processing batch ${i / batchSize + 1} of ${Math.ceil(rows.length / batchSize)}`);
+        const promises = batch.map((row) => {
+            const requestBody = { statement: row.Sentence };
+            return axios_1.default.post(apiUrl, requestBody)
+                .then((response) => {
+                console.log(`Request successful for query: ${row.Sentence}`, response.data);
+            })
+                .catch((error) => {
+                console.error(`Error making request for query: ${row.Sentence}`, error.message);
+            });
         });
-    });
-}
-async function makeRequests(rows) {
-    rows.forEach(async (row) => {
-        const requestBody = {
-            username: 'dataset',
-            password: row.Sentence,
-        };
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody),
-                mode: 'cors',
-                credentials: 'include',
-            });
-            const result = await response.text();
-            console.log('Request successful:', result);
-        }
-        catch (error) {
-            console.error('Request failed:', error);
-        }
-    });
-}
-async function main() {
-    try {
-        const rows = await readCsvFile(csvFilePath);
-        console.log('CSV file successfully processed');
-        // if (rows.length > 0) {
-        //     await makeRequests(rows);
-        // }
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: 'dataset', password: "SELECT * FROM request" }),
-                mode: 'cors',
-                credentials: 'include',
-            });
-            const result = await response.text();
-            console.log('Request successful:', result);
-        }
-        catch (error) {
-            console.error('Request failed:', error);
-        }
+        await Promise.all(promises);
+        console.log(`Batch ${i / batchSize + 1} completed`);
     }
-    catch (error) {
-        console.error('Error processing CSV file:', error);
-    }
+    console.log('All batches processed');
 }
-main();
 //# sourceMappingURL=main.js.map
