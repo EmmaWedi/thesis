@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize)]
 pub struct Customer {
    statement: String,
+   label: String,
 }
 
 pub async fn login(payload: web::Json<Customer>) -> HttpResponse {

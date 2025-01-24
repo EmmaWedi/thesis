@@ -19,7 +19,8 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Request::Ip).string().not_null())
-                    .col(ColumnDef::new(Request::Body).json().not_null())
+                    .col(ColumnDef::new(Request::Body).string().not_null())
+                    .col(ColumnDef::new(Request::Label).string().not_null())
                     .col(
                         ColumnDef::new(Request::Status)
                             .string()
@@ -54,6 +55,7 @@ enum Request {
     Id,
     Ip,
     Body,
+    Label,
     Status,
     CreatedAt,
     UpdatedAt,

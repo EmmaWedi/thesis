@@ -3,7 +3,8 @@ import csv from 'csv-parser';
 import axios from 'axios';
 
 interface CsvRow {
-    Sentence: string;
+  Sentence: string;
+  Label: string;
 }
 
 const csvFilePath = 'SQLi.csv';
@@ -32,7 +33,7 @@ async function processRowsInBatches(rows: CsvRow[], batchSize: number) {
     console.log(`Processing batch ${i / batchSize + 1} of ${Math.ceil(rows.length / batchSize)}`);
 
     const promises = batch.map((row) => {
-      const requestBody = { statement: row.Sentence };
+      const requestBody = { statement: row.Sentence, label: row.Label };
 
       return axios.post(apiUrl, requestBody)
         .then((response) => {

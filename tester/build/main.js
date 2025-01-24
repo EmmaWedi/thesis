@@ -24,10 +24,12 @@ async function processRowsInBatches(rows, batchSize) {
         const batch = rows.slice(i, i + batchSize);
         console.log(`Processing batch ${i / batchSize + 1} of ${Math.ceil(rows.length / batchSize)}`);
         const promises = batch.map((row) => {
-            const requestBody = { statement: row.Sentence };
+            const requestBody = { statement: row.Sentence, label: row.Label };
+            console.log(requestBody);
             return axios_1.default.post(apiUrl, requestBody)
                 .then((response) => {
                 console.log(`Request successful for query: ${row.Sentence}`, response.data);
+                console.log(response.data);
             })
                 .catch((error) => {
                 console.error(`Error making request for query: ${row.Sentence}`, error.message);

@@ -25,9 +25,13 @@ pub async fn write_logs(
 
     let body_value: Value = serde_json::from_str(&body).unwrap_or_else(|_| Value::String(body.clone()));
 
+    let label = body_value.get("label").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+    let statement = body_value.get("statement").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+
     let data = entity::request::ActiveModel {
         ip: Set(ip),
-        body: Set(body_value),
+        body: Set(statement),
+        label: Set(label),
         status: Set("pending".to_string()),
         created_at: Set(Utc::now().with_timezone(&chrono::FixedOffset::east_opt(0).unwrap())),
         updated_at: Set(Utc::now().with_timezone(&chrono::FixedOffset::east_opt(0).unwrap())),
