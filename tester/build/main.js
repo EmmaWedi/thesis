@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const csv_parser_1 = __importDefault(require("csv-parser"));
 const axios_1 = __importDefault(require("axios"));
-const csvFilePath = 'SQLi.csv';
+const csvFilePath = 'SQLiV3.csv';
 const apiUrl = 'http://localhost:3500/api/v1/customers/login';
 const batchSize = 10;
 const rows = [];
@@ -24,16 +24,16 @@ async function processRowsInBatches(rows, batchSize) {
         const batch = rows.slice(i, i + batchSize);
         console.log(`Processing batch ${i / batchSize + 1} of ${Math.ceil(rows.length / batchSize)}`);
         const promises = batch.map((row) => {
-            const requestBody = { statement: row.Sentence, label: row.Label };
-            console.log(requestBody);
-            return axios_1.default.post(apiUrl, requestBody)
-                .then((response) => {
-                console.log(`Request successful for query: ${row.Sentence}`, response.data);
-                console.log(response.data);
-            })
-                .catch((error) => {
-                console.error(`Error making request for query: ${row.Sentence}`, error.message);
-            });
+            if (row.Label === '0' || row.Label === '1') {
+                const requestBody = { statement: row.Sentence, label: row.Label };
+                return axios_1.default.post(apiUrl, requestBody)
+                    .then((response) => {
+                    console.log(`Request successful for query: ${row.Sentence}`, response.data);
+                })
+                    .catch((error) => {
+                    console.error(`Error making request for query: ${row.Sentence}`, error.message);
+                });
+            }
         });
         await Promise.all(promises);
         console.log(`Batch ${i / batchSize + 1} completed`);

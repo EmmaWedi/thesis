@@ -43,7 +43,7 @@ pub async fn write_logs(
         .await
         .map_err(|err| {
             actix_web::error::ErrorInternalServerError(format!(
-                "Failed to save request to database: {}",
+                "Failed to save to database: {}",
                 err
             ))
         })?;

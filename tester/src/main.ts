@@ -7,7 +7,7 @@ interface CsvRow {
   Label: string;
 }
 
-const csvFilePath = 'SQLi.csv';
+const csvFilePath = 'SQLiV3.csv';
 const apiUrl = 'http://localhost:3500/api/v1/customers/login';
 
 const batchSize = 10;
@@ -21,7 +21,6 @@ fs.createReadStream(csvFilePath)
   })
   .on('end', () => {
     console.log('CSV file successfully processed');
-
     processRowsInBatches(rows, batchSize);
   });
 
@@ -33,15 +32,17 @@ async function processRowsInBatches(rows: CsvRow[], batchSize: number) {
     console.log(`Processing batch ${i / batchSize + 1} of ${Math.ceil(rows.length / batchSize)}`);
 
     const promises = batch.map((row) => {
-      const requestBody = { statement: row.Sentence, label: row.Label };
+      if (row.Label === '0' || row.Label === '1') {
+        const requestBody = { statement: row.Sentence, label: row.Label };
 
-      return axios.post(apiUrl, requestBody)
-        .then((response) => {
-          console.log(`Request successful for query: ${row.Sentence}`, response.data);
-        })
-        .catch((error) => {
-          console.error(`Error making request for query: ${row.Sentence}`, error.message);
-        });
+        return axios.post(apiUrl, requestBody)
+          .then((response) => {
+            console.log(`Request successful for query: ${row.Sentence}`, response.data);
+          })
+          .catch((error) => {
+            console.error(`Error making request for query: ${row.Sentence}`, error.message);
+          });
+      }
     });
 
     await Promise.all(promises);

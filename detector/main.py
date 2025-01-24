@@ -123,7 +123,7 @@ async def detect_sql(request: Request):
         data = await request.json()
     except Exception as e:
         return JSONResponse(
-            status_code=400,
+            status_code=500,
             content={
                 "success": False,
                 "message": f"Invalid JSON: {str(e)}",
